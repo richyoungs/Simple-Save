@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <limits>
 
 using namespace std;
 
@@ -78,11 +79,23 @@ _______________________________________
             case 1:
                 system("cls");
                 cout << "Enter your favorite number: ";
-                cin >> favoriteNumber;  
+                cin >> favoriteNumber;
+
+                while (!std::cin.good())
+                {
+                    cin.clear();
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    system("cls");
+                    cout << "Invalid entry. Please try again." << endl;
+                    system("pause");
+                    favoriteNumber = -123456;
+                    displayMainMenu();
+                }
                 system("cls");
                 cout << "Favorite number remembered." << endl;
                 system("pause");
-                displayMainMenu();  
+                displayMainMenu();
+                
 
             case 2:
                 if (favoriteNumber == -123456) {
