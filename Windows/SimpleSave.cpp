@@ -23,27 +23,37 @@
 #include <vector>
 #include <sstream>
 #include <limits>
+#include <filesystem>
 
-using namespace std;
+
+//using namespace std;
 
 class Game {
 private:
     int favoriteNumber = -123456;
     void save() {
-        ofstream file("Data/number.dat");
-        system("cls");
-        cout << "Your number has been saved succesfully" << endl;
-        system("pause");
-        file << favoriteNumber << endl;
-        // Data needs to be saved in a better format than just an int in a file
-        // Testing has found that numbers are thrown into the file without organization
-        // This causes issues when loading from the file
-        file.close();
+
+        std::filesystem::create_directories("./Data");
+        std::ofstream file("Data/number.dat"); 
+        if (file.is_open()) {
+            file << favoriteNumber << std::endl;
+            file.close();
+            system("cls");
+            std::cout << "Data saved successfully!" << std::endl;
+            system("pause");
+            displayMainMenu();
+        }
+        else {
+            system("cls");
+            std::cout << "Error: Unable to save data" << std::endl;
+            system("pause");
+            displayMainMenu();
+        }
     }
     void load() {
-        ifstream file("Data/number.dat");
+        std::ifstream file("Data/number.dat");
         system("cls");
-        cout << "Your number has been loaded from the save file" << endl;
+        std::cout << "Your number has been loaded from the save file" << std::endl;
         system("pause");
         file >> favoriteNumber;
         file.close();
@@ -58,41 +68,41 @@ public:
     void displayMainMenu() {
         system("cls"); 
 
-cout << R"(
+std::cout << R"(
      _   _   _   _     _   _   _   _  
     / \ / \ / \ / \   / \ / \ / \ / \ 
    ( M | a | i | n ) ( M | e | n | u )
     \_/ \_/ \_/ \_/   \_/ \_/ \_/ \_/ 
 _______________________________________
-)" << endl << endl;
+)" << std::endl << std::endl;
 
-        cout << "1. Enter favorite number" << endl;
-        cout << "2. Display favorite number" << endl;
-        cout << "3. Options" << endl;
-        cout << "4. Exit" << endl << endl;
-        cout << "> ";
+    std::cout << "1. Enter favorite number" << std::endl;
+    std::cout << "2. Display favorite number" << std::endl;
+    std::cout << "3. Options" << std::endl;
+    std::cout << "4. Exit" << std::endl << std::endl;
+    std::cout << "> ";
 
         int choice;
-        cin >> choice;
+        std::cin >> choice;
         switch (choice) {
 
             case 1:
                 system("cls");
-                cout << "Enter your favorite number: ";
-                cin >> favoriteNumber;
+                std::cout << "Enter your favorite number: ";
+                std::cin >> favoriteNumber;
 
                 while (!std::cin.good())
                 {
-                    cin.clear();
-                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     system("cls");
-                    cout << "Invalid entry. Please try again." << endl;
+                    std::cout << "Invalid entry. Please try again." << std::endl;
                     system("pause");
                     favoriteNumber = -123456;
                     displayMainMenu();
                 }
                 system("cls");
-                cout << "Favorite number remembered." << endl;
+                std::cout << "Favorite number remembered." << std::endl;
                 system("pause");
                 displayMainMenu();
                 
@@ -100,12 +110,12 @@ _______________________________________
             case 2:
                 if (favoriteNumber == -123456) {
                     system("cls");
-                    cout << "No favorite number has been entered yet." << endl;
+                    std::cout << "No favorite number has been entered yet." << std::endl;
                     system("pause");  
                 }
                 else {
                     system("cls");
-                    cout << "Your favorite number is " << favoriteNumber << endl;
+                    std::cout << "Your favorite number is " << favoriteNumber << std::endl;
                     system("pause");
                 }
                 displayMainMenu();
@@ -121,8 +131,8 @@ _______________________________________
             default:
 
                 system("cls");
-                cout << "Invalid choice. Try again." << endl;
-                cin.clear();
+                std::cout << "Invalid choice. Try again." << std::endl;
+                std::cin.clear();
                 //cin.ignore();
                 //cin.clear();
                 fflush(stdin);
@@ -134,47 +144,50 @@ _______________________________________
     void displayOptionsMenu() {
         system("cls");
 
-        cout << R"(
+        std::cout << R"(
      _   _   _   _   _   _   _  
     / \ / \ / \ / \ / \ / \ / \ 
    ( O | p | t | i | o | n | s )
     \_/ \_/ \_/ \_/ \_/ \_/ \_/ 
 ________________________________
 
-)" << endl << endl;
+)" << std::endl << std::endl;
 
-        cout << "1. Save favorite number" << endl;
-        cout << "2. Load favorite number" << endl;
-        cout << "3. Go back to main menu" << endl << endl;
-        cout << "> ";
+        std::cout << "1. Save favorite number" << std::endl;
+        std::cout << "2. Load favorite number" << std::endl;
+        std::cout << "3. Go back to main menu" << std::endl << std::endl;
+        std::cout << "> ";
 
         int choice;
-        cin >> choice;
+        std::cin >> choice;
 
         switch (choice) {
             case 1:
                 if (favoriteNumber == -123456){
                     system("cls");
-                    cout << "No data to Save." << endl;
+                    std::cout << "No data to Save." << std::endl;
                     system("pause");
                     displayOptionsMenu();
                 }
                 else{
                     save();
-                    cout << "Favorite number saved." << endl;
+                    std::cout << "Favorite number saved." << std::endl;
                     displayOptionsMenu();
                     break;
                 }
             case 2:
+                //This needs logically re-written. 
+                //Fails to load on new boot since favoriteNumber is less than 0 by default an error is thrown
+                //Issue will be logged in Github and resolved ASAP
                 if (favoriteNumber <= 0 ){
                     system("cls");
-                    cout << "No Data to Load." << endl;
+                    std::cout << "No Data to Load." << std::endl;
                     system("pause");
                     displayOptionsMenu();
                 }
                 else{
                 load();
-                cout << "Loaded favorite number: " << favoriteNumber << endl;
+                std::cout << "Loaded favorite number: " << favoriteNumber << std::endl;
                 displayOptionsMenu();
                 }
                 break;
@@ -183,8 +196,8 @@ ________________________________
                 break;
             default:
                 system("cls");
-                cout << "Invalid choice. Try again." << endl;
-                cin.clear();
+                std::cout << "Invalid choice. Try again." << std::endl;
+                std::cin.clear();
                 //cin.ignore();
                 //cin.clear();
                 system("pause");
@@ -197,7 +210,7 @@ ________________________________
 
 int main() {
 
-   cout <<  R"(
+    std::cout <<  R"(
         
       ____                           ___               ____                              
      /\  _`\   __                   /\_ \             /\  _`\                            
@@ -207,8 +220,11 @@ int main() {
         \ `\____\ \_\ \_\ \_\ \_\ \ ,__/\____\ \____\    \ `\____\ \__/.\_\ \___/\ \____\
          \/_____/\/_/\/_/\/_/\/_/\ \ \/\/____/\/____/     \/_____/\/__/\/_/\/__/  \/____/
                                   \ \_\                                                  
-                                   \/_/                                                  
- )" << endl << endl <<endl << endl << endl << endl << endl << endl << endl;
+                                   \/_/   
+
+Version 0.60
+Build: 23.1.29                                               
+ )" << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
 
     system("pause");
     Game game;
